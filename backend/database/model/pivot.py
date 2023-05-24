@@ -12,4 +12,4 @@ class Pivot(alchemy.Model):
 
 
 for i in range(PIVOT_COUNT):
-    Pivot[f'p{i}'] = sql.Column(types.Float, nullable=False)
+    setattr(Pivot, f'p{i}', sql.Column(types.Float, nullable=False))

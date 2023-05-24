@@ -11,4 +11,4 @@ class Photo(alchemy.Model):
 
 
 for i in range(PIVOT_COUNT):
-    Photo[f'p{i}'] = sql.Column(types.Float, nullable=False)
+    setattr(Photo, f'p{i}', sql.Column(types.Float, nullable=False))

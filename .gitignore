@@ -1,4 +1,4 @@
 *.pyc
-static/img/*.jpg
+backend/static/img/*.jpg
 .venv
 __pycache__
