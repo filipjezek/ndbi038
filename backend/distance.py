@@ -2,7 +2,7 @@ import numpy as np
 from typing import Iterable
 
 
-def lp(x: Iterable[float], y: Iterable[float], p: float, axis=None):
+def lp(x: Iterable[float], y: Iterable[float], p: float, axis=None) -> float:
     """
     normalized to [0, 0.5]
     x and y are expected to be unit vectors

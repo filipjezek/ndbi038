@@ -1,9 +1,20 @@
 from backend.app import app
 from backend.database.initializer import DatabaseInitializer
+from backend.database.alchemy import alchemy
+from backend.cluster_tree import ClusterTree
+from backend.database.model.photo import Photo
+from sqlalchemy import select
 
 with app.app_context():
     initializer = DatabaseInitializer()
-    initializer.recreate_all()
+    initializer.recreate_all(100)
+
+    photo1 = alchemy.session.execute(
+        select(Photo).where(Photo.id == 46)
+    ).scalar_one()
+    results = ClusterTree.range_search(photo1.clip_features, 0.2)
+    print(results)
+
 
 from .server_api import api  # nopep8
 

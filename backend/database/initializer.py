@@ -16,12 +16,10 @@ class DatabaseInitializer:
         alchemy.create_all()
         self.pivots: List[Pivot] = list(alchemy.session.execute(
             select(Pivot)).scalars())
-        self.tree = ClusterTree(self.pivots)
         print('rebuilding tree...')
+        ClusterTree.reset(self.pivots)
         for obj in alchemy.session.execute(select(Photo)).scalars():
-            if obj.id == 1205:
-                print(obj.key)
-            self.tree.insert_object(obj)
+            ClusterTree.insert_object(obj)
 
     def __create_pivots(self):
         features = [get_photo_features(p) for p in iter_sample_fast(
@@ -43,7 +41,7 @@ class DatabaseInitializer:
         print('tables created')
         print('creating pivots...')
         self.__create_pivots()
-        self.tree = ClusterTree(self.pivots)
+        ClusterTree.reset(self.pivots)
         print('precomputing photos...')
         for p in it.islice(Path(__file__).joinpath('../../static/img').glob('*.jpg'), limit):
             print('\r' + p.name, end='', flush=True)
@@ -56,6 +54,6 @@ class DatabaseInitializer:
         photo = Photo(filename=filename, clip_features=features)
         for i, pivot in enumerate(self.pivots):
             setattr(photo, f'p{i}', distance(pivot.clip_features, features))
-        self.tree.insert_object(photo)
+        ClusterTree.insert_object(photo)
         alchemy.session.add(photo)
         alchemy.session.commit()

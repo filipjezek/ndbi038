@@ -1,5 +1,5 @@
 from typing import Tuple, List
-
+from collections import deque
 from backend.database.model.pivot import PIVOT_COUNT, Pivot
 from backend.database.model.photo import Photo
 from backend.distance import distance
@@ -13,16 +13,61 @@ class ClusterTree:
     L_MAX = 5
     LEAF_SPLIT_AT = PIVOT_COUNT ** 2
 
-    def __init__(self, pivots: List[Pivot]):
-        self.root = _InternalNode(0, tuple())
-        self.pivots = pivots
-        self.root.children = [_LeafNode(1, (p.id - 1, )) for p in self.pivots]
+    @classmethod
+    def reset(cls, pivots: List[Pivot]):
+        cls.root = _InternalNode(0, tuple())
+        cls.pivots = pivots
+        cls.root.children = [_LeafNode(1, (p.id - 1, )) for p in cls.pivots]
 
-    def insert_object(self, obj: Photo):
+    @classmethod
+    def insert_object(cls, obj: Photo):
         """
         this will compute (and set) obj.key, posibly rehashing some other object keys
         """
-        self.root.accept(_InsertVisitor(obj, self.pivots))
+        cls.root.accept(_InsertVisitor(obj, cls.pivots))
+
+    @classmethod
+    def range_search(cls, query: np.ndarray, radius: float):
+        p_dists = [distance(query, p.clip_features) for p in cls.pivots]
+        p_perm = np.argsort(p_dists)
+        queue = deque((cls.root, ))
+        results = set()
+        while len(queue) > 0:
+            node = queue.pop()
+            if node.lvl > 0 and (
+                p_dists[node.pivot_prefix[-1]] -
+                p_dists[cls.__min_valid_p(p_perm, node)]
+            ) > 2 * radius:
+                continue
+            if isinstance(node, _InternalNode):
+                queue.extendleft(node.children)
+                continue
+
+            dist_to_pp0 = p_dists[node.pivot_prefix[0]]
+            if dist_to_pp0 + radius < (node.min % 1) or dist_to_pp0 - radius > (node.max % 1):
+                continue
+
+            for obj in alchemy.session.execute(
+                select(Photo).where(Photo.key.between(
+                    (node.min // 1) + dist_to_pp0 - radius,
+                    (node.min // 1) + dist_to_pp0 + radius,
+                ))
+            ).scalars():
+                if max(
+                    abs(pd - getattr(obj, f'p{i}'))
+                    for i, pd in enumerate(p_dists)
+                ) > radius:
+                    continue
+                if distance(obj.clip_features, query) <= radius:
+                    results.add(obj)
+        return results
+
+    @staticmethod
+    def __min_valid_p(p_perm: List[int], node: '_Node') -> int:
+        skip = node.pivot_prefix[:-1]
+        for i in p_perm:
+            if i not in skip:
+                return i
 
 
 class _Node:
@@ -87,8 +132,7 @@ class _InsertVisitor(_Visitor):
             self.__split_leaf(node)
             return
 
-        frac = distance(self.obj.clip_features,
-                        self.pivots[node.pivot_prefix[0]].clip_features)
+        frac = getattr(self.obj, f'p{node.pivot_prefix[0]}')
         self.obj.key += frac
         if node.obj_count == 0:
             node.min = node.max = self.obj.key
