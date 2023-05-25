@@ -12,7 +12,7 @@ with app.app_context():
     photo1 = alchemy.session.execute(
         select(Photo).where(Photo.id == 46)
     ).scalar_one()
-    results = ClusterTree.range_search(photo1.clip_features, 0.2)
+    results = ClusterTree.knn_search(photo1.clip_features, 8)
     print(results)
 
 

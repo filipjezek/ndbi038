@@ -1,5 +1,6 @@
 from typing import Tuple, List
 from collections import deque
+from backend.priority_queue import PriorityQueue
 from backend.database.model.pivot import PIVOT_COUNT, Pivot
 from backend.database.model.photo import Photo
 from backend.distance import distance
@@ -62,12 +63,63 @@ class ClusterTree:
                     results.add(obj)
         return results
 
+    @classmethod
+    def knn_search(cls, query: np.ndarray, k: int):
+        radius = 1
+        p_dists = [distance(query, p.clip_features) for p in cls.pivots]
+        p_perm = np.argsort(p_dists)
+        queue = PriorityQueue['_Node']((cls.root, 0))
+        candidates = PriorityQueue[Photo](smallest_first=False)
+        while len(queue) > 0:
+            node, penalty = queue.dequeue()
+            if node.lvl > 0 and (
+                p_dists[node.pivot_prefix[-1]] -
+                p_dists[cls.__min_valid_p(p_perm, node)]
+            ) > 2 * radius:
+                continue
+            if isinstance(node, _InternalNode):
+                for ch in node.children:
+                    queue.enqueue(ch, cls.__penalty(p_perm, p_dists, ch))
+                continue
+
+            dist_to_pp0 = p_dists[node.pivot_prefix[0]]
+            if dist_to_pp0 + radius < (node.min % 1) or dist_to_pp0 - radius > (node.max % 1):
+                continue
+
+            for obj in alchemy.session.execute(
+                select(Photo).where(Photo.key.between(
+                    (node.min // 1) + dist_to_pp0 - radius,
+                    (node.min // 1) + dist_to_pp0 + radius,
+                ))
+            ).scalars():
+                if obj in candidates or max(
+                    abs(pd - getattr(obj, f'p{i}'))
+                    for i, pd in enumerate(p_dists)
+                ) > radius:
+                    continue
+                actual_dist = distance(obj.clip_features, query)
+                if actual_dist <= radius:
+                    if len(candidates) == k:
+                        candidates.en_dequeue(obj, actual_dist)
+                    else:
+                        candidates.enqueue(obj, actual_dist)
+                    if len(candidates) == k:
+                        radius = candidates.peek()[1]
+        return [c[0] for c in candidates.to_reverse_list()]
+
     @staticmethod
     def __min_valid_p(p_perm: List[int], node: '_Node') -> int:
         skip = node.pivot_prefix[:-1]
         for i in p_perm:
             if i not in skip:
                 return i
+
+    @staticmethod
+    def __penalty(p_perm: List[int], p_dists: List[float], node: '_Node') -> float:
+        penalty = 0
+        for ideal, p in zip(p_perm, node.pivot_prefix):
+            penalty += max(0, p_dists[p] - p_dists[ideal])
+        return penalty / node.lvl
 
 
 class _Node:
