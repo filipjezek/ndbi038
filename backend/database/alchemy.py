@@ -3,7 +3,7 @@ from sqlalchemy.types import TypeDecorator
 from sqlalchemy import types
 import io
 import numpy as np
-from .. import app
+from backend import app
 
 alchemy = SQLAlchemy(app)
 

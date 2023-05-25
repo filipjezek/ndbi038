@@ -2,3 +2,4 @@
 backend/static/img/*.jpg
 .venv
 __pycache__
+.vscode

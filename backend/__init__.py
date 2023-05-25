@@ -1,9 +1,9 @@
-from .app import app
-from .database.initializer import DatabaseInitializer
+from backend.app import app
+from backend.database.initializer import DatabaseInitializer
 
 with app.app_context():
     initializer = DatabaseInitializer()
-    initializer.recreate_all(100)
+    initializer.recreate_all()
 
 from .server_api import api  # nopep8
 

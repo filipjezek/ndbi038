@@ -4,10 +4,10 @@ from typing import Iterable
 
 def lp(x: Iterable[float], y: Iterable[float], p: float, axis=None):
     """
-    normalized to 0..1
+    normalized to [0, 0.5]
     x and y are expected to be unit vectors
     """
-    return np.linalg.norm(x-y, ord=p, axis=axis) / 2
+    return np.linalg.norm(x-y, ord=p, axis=axis) / 4
 
 
 def l1(x, y, axis=None):

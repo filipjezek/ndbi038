@@ -1,6 +1,6 @@
 import sqlalchemy as sql
 from sqlalchemy import types
-from ..alchemy import alchemy, NumpyArray
+from backend.database.alchemy import alchemy, NumpyArray
 
 
 PIVOT_COUNT = 20
