@@ -1,4 +1,7 @@
 import random
+from urllib import request
+from PIL import Image
+import io
 
 
 def iter_sample_fast(iterable, samplesize):
@@ -22,3 +25,10 @@ def iter_sample_fast(iterable, samplesize):
             results[r] = v  # at a decreasing rate, replace random items
 
     return results
+
+
+def data_url_to_image(url: str):
+    with request.urlopen(url) as response:
+        data = response.read()
+        img = Image.open(io.BytesIO(data))
+        return img

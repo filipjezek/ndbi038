@@ -1,0 +1,15 @@
+<label [title]="inp.files[0]?.name || ''">
+  Browse...
+  <input
+    type="file"
+    accept="image/*"
+    [disabled]="disabled"
+    #inp
+    (click)="onTouchedCb?.()"
+    (change)="onControlChange(inp.files[0])"
+  />
+</label>
+
+<div class="preview-container">
+  <img *ngIf="value" [src]="value" alt="Image preview" class="preview" />
+</div>

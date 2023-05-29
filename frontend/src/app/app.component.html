@@ -1,0 +1,11 @@
+<ndbi038-query-column (query)="sendQuery($event)"></ndbi038-query-column>
+<ndbi038-display-grid
+  #grid
+  [images]="images"
+  [cols]="imgColumns"
+></ndbi038-display-grid>
+<ndbi038-loading-overlay
+  @fade
+  *ngIf="loading$ | async"
+></ndbi038-loading-overlay>
+<ndbi038-overlay @fade *ngIf="showOverlay$ | async"></ndbi038-overlay>

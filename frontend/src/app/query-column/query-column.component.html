@@ -1,0 +1,39 @@
+<form [formGroup]="queryForm" (ngSubmit)="submitQuery()">
+  <h1>Query</h1>
+  <div>
+    Query type
+    <ndbi038-button-radio
+      [formControl]="queryTypeCtrl"
+      [options]="queryTypes"
+    ></ndbi038-button-radio>
+  </div>
+  <label class="double-row" *ngIf="queryTypeCtrl.value == 'text'">
+    Text query
+    <textarea
+      #textQuery
+      formControlName="text"
+      (keydown.enter)="
+        $event.preventDefault(); queryForm.valid && submitQuery()
+      "
+    ></textarea>
+  </label>
+  <label class="double-row" *ngIf="queryTypeCtrl.value == 'image'">
+    Image query
+    <ndbi038-img-input formControlName="image"></ndbi038-img-input>
+  </label>
+  <h2>Display properties</h2>
+  <div>
+    Display type
+    <ndbi038-button-radio
+      formControlName="displayType"
+      [options]="displayTypes"
+    ></ndbi038-button-radio>
+  </div>
+  <label>
+    Display size
+    <input type="number" formControlName="k" min="1" />
+  </label>
+  <div class="controls">
+    <button type="submit" [disabled]="!queryForm.valid">submit query</button>
+  </div>
+</form>

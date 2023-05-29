@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .preview-container {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+  }
+  .preview {
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 3px #00000078;
+  }
+
+  label {
+    border: 1px solid #959595;
+    background-color: rgb(233, 233, 237);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    display: inline-block;
+
+    &:hover {
+      background-color: rgb(208, 208, 215);
+    }
+
+    input {
+      display: none;
+    }
+  }
+}

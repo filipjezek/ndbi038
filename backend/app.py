@@ -7,7 +7,9 @@ app = Flask(
     __name__,
     instance_relative_config=True,
     instance_path=Path(__file__).joinpath('../instance').resolve(),
-    root_path=Path(__file__).joinpath('..').resolve()
+    root_path=Path(__file__).joinpath('..').resolve(),
+    static_url_path='/',
+    static_folder=Path(__file__).joinpath('../static').resolve(),
 )
 
 

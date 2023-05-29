@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  align-items: stretch;
+
+  ndbi038-display-grid {
+    flex-basis: 100%;
+  }
+  ndbi038-query-column {
+    flex-shrink: 0;
+  }
+}

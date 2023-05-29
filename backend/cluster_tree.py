@@ -41,7 +41,7 @@ class ClusterTree:
             ) > 2 * radius:
                 continue
             if isinstance(node, _InternalNode):
-                queue.extendleft(node.children)
+                queue.extendleft(filter(lambda n: n != None, node.children))
                 continue
 
             dist_to_pp0 = p_dists[node.pivot_prefix[0]]
@@ -78,7 +78,7 @@ class ClusterTree:
             ) > 2 * radius:
                 continue
             if isinstance(node, _InternalNode):
-                for ch in node.children:
+                for ch in filter(lambda n: n != None, node.children):
                     queue.enqueue(ch, cls.__penalty(p_perm, p_dists, ch))
                 continue
 

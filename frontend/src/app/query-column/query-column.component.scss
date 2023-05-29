@@ -1,0 +1,41 @@
+:host {
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.controls {
+  text-align: right;
+  padding: 5px 0;
+
+  button {
+    margin-left: 5px;
+  }
+}
+
+ndbi038-button-radio {
+  margin: 5px auto;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.double-row {
+    width: 340px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+
+    *:last-child {
+      margin-top: 5px;
+      flex-basis: 100%;
+    }
+  }
+}
+
+input[type="number"] {
+  width: 90px;
+}
+textarea {
+  resize: vertical;
+}
