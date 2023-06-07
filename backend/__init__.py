@@ -6,8 +6,8 @@ import flask
 
 with app.app_context():
     initializer = DatabaseInitializer()
-#     comment this line out if you want to reuse already populated db
-#     initializer.recreate_all()
+    # comment this line out if you want to reuse already populated db
+    initializer.recreate_all()
 
 
 app.register_blueprint(api, url_prefix='/api/')

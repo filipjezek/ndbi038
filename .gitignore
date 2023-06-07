@@ -1,5 +1,6 @@
 *.pyc
 backend/static/img/*.jpg
+backend/static/frontend_dist
 .venv
 __pycache__
 .vscode
